@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RN Guincho — Rebranding e Arquitetura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noite:#0E1A24;
+  --asfalto:#1B2C39;
+  --giratorio:#FF9500;
+  --nevoa:#EEF1F3;
+  --branco:#FFFFFF;
+  --farol:#0B6BA8;
+  --triangulo:#D7263D;
+  --zap:#25D366;
+  --texto:#0E1A24;
+  --texto-fraco:#5A6B77;
+  --linha:#D3DAE0;
+  --display:"Barlow Condensed",'Arial Narrow',sans-serif;
+  --corpo:"Barlow",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--nevoa);color:var(--texto);
+  font-family:var(--corpo);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:themax;max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.02;margin:0;letter-spacing:-0.01em}
+p{max-width:68ch}
+
+/* faixa de socorro: motivo da fita refletiva traseira do guincho */
+.chevron{
+  height:14px;
+  background:repeating-linear-gradient(115deg,var(--giratorio) 0 22px,var(--noite) 22px 44px);
+}
+
+/* ---------- capa ---------- */
+.capa{background:var(--noite);color:var(--branco);padding:72px 0 64px}
+.capa .marca{font-family:var(--display);font-size:20px;letter-spacing:.16em;color:var(--giratorio);margin:0 0 28px}
+.capa h1{font-size:clamp(48px,9vw,104px);color:var(--branco);max-width:14ch}
+.capa .sub{color:#9FB1BE;margin-top:20px;font-size:19px;max-width:56ch}
+.meta{display:flex;flex-wrap:wrap;gap:28px;margin-top:40px;padding-top:24px;border-top:1px solid #2A3D4C}
+.meta div{font-size:15px;color:#9FB1BE}
+.meta b{display:block;font-family:var(--display);font-size:22px;color:var(--branco);font-weight:600;letter-spacing:0}
+
+/* ---------- seções ---------- */
+section{padding:64px 0}
+section.escura{background:var(--noite);color:var(--branco)}
+section.escura h2,section.escura h3{color:var(--branco)}
+section.escura p{color:#9FB1BE}
+h2{font-size:clamp(30px,4.4vw,46px);margin-bottom:8px}
+.linha-titulo{color:var(--texto-fraco);font-size:16px;margin:0 0 32px;max-width:64ch}
+section.escura .linha-titulo{color:#7E93A2}
+h3{font-size:22px;margin:32px 0 10px}
+
+/* ---------- paleta ---------- */
+.paleta{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:2px;margin:24px 0 8px}
+.cor{padding:96px 14px 14px;color:var(--branco)}
+.cor .nome{font-family:var(--display);font-size:19px;font-weight:600}
+.cor .hex{font-size:14px;opacity:.85}
+.cor .uso{font-size:13.5px;line-height:1.4;margin-top:8px;opacity:.85;border-top:1px solid rgba(255,255,255,.28);padding-top:8px}
+.cor.clara{color:var(--noite)}
+.cor.clara .uso{border-top-color:rgba(14,26,36,.25)}
+
+.aviso{
+  border-left:4px solid var(--giratorio);
+  background:var(--branco);padding:16px 20px;margin:24px 0;
+  font-size:16px;
+}
+section.escura .aviso{background:var(--asfalto)}
+.aviso strong{font-weight:600}
+
+/* ---------- tipografia ---------- */
+.spec{background:var(--branco);border:1px solid var(--linha);padding:28px;margin:20px 0}
+.spec .rotulo{font-size:13.5px;color:var(--texto-fraco);margin-bottom:12px}
+.d1{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,76px);line-height:.95}
+.d2{font-family:var(--display);font-weight:600;font-size:32px}
+.tel{font-family:var(--display);font-weight:700;font-size:clamp(38px,7vw,68px);font-variant-numeric:tabular-nums;color:var(--giratorio);background:var(--noite);padding:18px 24px;display:inline-block}
+
+/* ---------- wireframe / código ---------- */
+pre{
+  background:var(--noite);color:#C9D6E0;padding:22px;overflow-x:auto;
+  font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13.5px;line-height:1.65;margin:20px 0;
+}
+pre b{color:var(--giratorio);font-weight:400}
+pre i{color:#7E93A2;font-style:normal}
+
+/* ---------- tabela ---------- */
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--linha);vertical-align:top}
+th{font-family:var(--display);font-size:17px;font-weight:600;background:var(--noite);color:var(--branco);border-bottom:none}
+tbody tr:nth-child(even){background:var(--branco)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:rgba(11,107,168,.1);color:var(--farol);padding:1px 5px}
+
+/* ---------- colunas server/client ---------- */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:24px 0}
+.duo>div{padding:24px;background:var(--branco);border-top:6px solid var(--farol)}
+.duo>div:last-child{border-top-color:var(--giratorio)}
+.duo h3{margin-top:0;font-size:20px}
+.duo ul{margin:12px 0 0;padding-left:18px;font-size:15.5px}
+.duo li{margin-bottom:7px}
+.duo .peso{font-size:13.5px;color:var(--texto-fraco);margin:4px 0 0}
+
+/* ---------- riscos ---------- */
+.risco{background:var(--branco);border:1px solid var(--linha);border-left:5px solid var(--triangulo);padding:22px 24px;margin:18px 0}
+.risco h3{margin:0 0 8px;font-size:21px}
+.risco p{font-size:16px;margin:0 0 10px}
+.risco p:last-child{margin-bottom:0}
+.risco .fix{color:var(--farol);font-weight:600}
+
+ol.fases{counter-reset:f;list-style:none;padding:0;margin:24px 0}
+ol.fases li{counter-increment:f;padding:16px 0 16px 56px;border-bottom:1px solid var(--linha);position:relative}
+ol.fases li::before{
+  content:counter(f);position:absolute;left:0;top:14px;
+  font-family:var(--display);font-weight:700;font-size:30px;color:var(--giratorio);
+}
+ol.fases b{font-family:var(--display);font-size:20px;font-weight:600;display:block}
+
+@media (max-width:720px){
+  .duo{grid-template-columns:1fr}
+  section{padding:48px 0}
+  .cor{padding:64px 14px 14px}
+}
+</style>
+</head>
+<body>
+
+<header class="capa">
+  <div class="wrap">
+    <p class="marca">RN GUINCHO · MANAUS-AM</p>
+    <h1>Quem liga não está navegando. Está parado no acostamento.</h1>
+    <p class="sub">Proposta de rebranding, arquitetura de rotas Next.js e plano de componentes para o portal de socorro rodoviário.</p>
+    <div class="meta">
+      <div><b>Next.js</b> App Router</div>
+      <div><b>Multi-página</b> SEO local</div>
+      <div><b>Rastreamento</b> tempo real</div>
+      <div><b>Meta</b> LCP &lt;2,5s · INP &lt;200ms · CLS &lt;0,1</div>
+    </div>
+  </div>
+</header>
+<div class="chevron"></div>
+
+<section>
+  <div class="wrap">
+    <h2>Posicionamento</h2>
+    <p class="linha-titulo">O que a marca precisa comunicar antes de qualquer decisão estética.</p>
+    <p>O mercado de guincho em Manaus se veste de oficina: amarelo e preto, tipografia condensada gritando, listras de perigo como decoração. Todo mundo parece igual, e todo mundo parece improvisado. Esse é o espaço aberto.</p>
+    <p>A RN Guincho vai se posicionar mais perto de um <strong>serviço de resgate</strong> do que de uma borracharia. A referência visual não é a oficina, é o veículo de socorro: giratório âmbar, fita refletiva, sinalização de via. Sério, calmo, legível de noite, em um celular com brilho no máximo sob sol de Manaus ou na escuridão de uma via sem iluminação.</p>
+    <p>Há dois públicos e eles não são iguais. O <strong>motorista em pânico</strong> quer um botão e nada mais. O <strong>comprador industrial</strong> (Distrito Industrial, transporte de empilhadeira e máquina) quer prova de capacidade: frota, capacidade de carga, CNPJ, seguro. A Home atende o primeiro; as páginas de serviço atendem o segundo.</p>
+  </div>
+</section>
+
+<section class="escura">
+  <div class="wrap">
+    <h2>Paleta</h2>
+    <p class="linha-titulo">Seis tokens. Cada um com uma função, nenhum decorativo.</p>
+
+    <div class="paleta">
+      <div class="cor" style="background:#0E1A24">
+        <div class="nome">Noite do Rio</div><div class="hex">#0E1A24</div>
+        <div class="uso">Fundo institucional. Azul profundo, não preto — evita o cinza morto de tela e sustenta o âmbar.</div>
+      </div>
+      <div class="cor" style="background:#1B2C39">
+        <div class="nome">Asfalto</div><div class="hex">#1B2C39</div>
+        <div class="uso">Superfície elevada sobre o fundo escuro: cards, barras, painel do rastreamento.</div>
+      </div>
+      <div class="cor clara" style="background:#FF9500">
+        <div class="nome">Giratório</div><div class="hex">#FF9500</div>
+        <div class="uso">Ação primária. Ligar, pedir socorro. É a cor do sinalizador rotativo — usar só onde houver ação.</div>
+      </div>
+      <div class="cor" style="background:#0B6BA8">
+        <div class="nome">Azul Farol</div><div class="hex">#0B6BA8</div>
+        <div class="uso">Camada informativa: links, mapa, rastreamento, estados de progresso.</div>
+      </div>
+      <div class="cor" style="background:#D7263D">
+        <div class="nome">Triângulo</div><div class="hex">#D7263D</div>
+        <div class="uso">Só erro e urgência real. Nunca como enfeite — se o vermelho aparecer sempre, ele para de significar algo.</div>
+      </div>
+      <div class="cor clara" style="background:#EEF1F3">
+        <div class="nome">Névoa</div><div class="hex">#EEF1F3</div>
+        <div class="uso">Fundo das páginas de conteúdo, onde a leitura é longa e o contraste alto cansa.</div>
+      </div>
+    </div>
+
+    <div class="aviso">
+      <strong>Contraste, o detalhe que quebra a acessibilidade.</strong> O Giratório #FF9500 sobre branco tem contraste de aproximadamente 2,2:1 e reprova em AA. Ele nunca é cor de texto sobre fundo claro. É sempre preenchimento, com texto Noite do Rio por cima (aproximadamente 8,7:1, aprovado com folga). Botão âmbar, letra escura.
+    </div>
+    <div class="aviso">
+      <strong>Verde WhatsApp #25D366 fica fora da paleta e é intencional.</strong> Reconhecimento de marca vale mais que pureza cromática num botão que o usuário precisa identificar em meio segundo. Ele é o único elemento com cor externa e não se repete em nenhum outro lugar.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Tipografia</h2>
+    <p class="linha-titulo">Barlow e Barlow Condensed. Uma superfamília, duas larguras ópticas.</p>
+    <p>Barlow nasceu da sinalização viária e de transporte público. Semi-arredondada, baixo contraste, desenhada para ser lida rápido e de longe — que é exatamente a situação do usuário. Escolher a superfamília em vez de duas famílias distintas dá contraste visual real entre título e texto sem pagar por um segundo tempo de download significativo, já que ambas são variáveis e carregam pelo <code>next/font</code> com subset latin.</p>
+
+    <div class="spec">
+      <div class="rotulo">Display · Barlow Condensed 700 · títulos e números</div>
+      <div class="d1">Guincho 24 horas<br>em Manaus</div>
+    </div>
+
+    <div class="spec">
+      <div class="rotulo">O número de telefone é o maior elemento tipográfico do site. Ele é o produto.</div>
+      <div class="tel">92 99397-6644</div>
+    </div>
+
+    <div class="spec">
+      <div class="rotulo">Corpo · Barlow 400/500 · leitura</div>
+      <div class="d2">Transporte de máquinas e equipamentos</div>
+      <p style="margin-top:10px">Atendemos remoção de empilhadeiras, geradores e equipamentos industriais no Distrito Industrial e região metropolitana, com prancha de capacidade compatível e amarração conforme norma. Medida de linha limitada a 68 caracteres.</p>
+    </div>
+
+    <p><strong>Escala fluida:</strong> <code>clamp()</code> em todos os níveis, base 17px no corpo (não 16 — a leitura acontece sob estresse e frequentemente com uma mão só). Números com <code>font-variant-numeric: tabular-nums</code> para telefone e placa não dançarem.</p>
+  </div>
+</section>
+
+<div class="chevron"></div>
+
+<section>
+  <div class="wrap">
+    <h2>Estrutura da Home</h2>
+    <p class="linha-titulo">Ordem definida por quem está no acostamento, não por quem está admirando o site.</p>
+
+<pre>
+┌────────────────────────────────────────────────┐
+│ ☎ 92 99397-6644            [ WhatsApp ]        │ <b>barra fixa · CSS puro · 0 JS</b>
+├────────────────────────────────────────────────┤
+│                                                │
+│  GUINCHO 24 HORAS                              │ <b>h1 condensada, alinhada à esquerda</b>
+│  EM MANAUS                                     │
+│                                                │
+│  <b>92 99397-6644</b>                                 │ <b>o telefone É o herói visual</b>
+│                                                │
+│  [ LIGAR AGORA ]  [ WhatsApp ]                 │ <b>zona do polegar, alvos ≥56px</b>
+│  ★ 4,9 · 87 avaliações no Google               │ <b>prova social acima da dobra</b>
+├────────────────────────────────────────────────┤
+│ CNPJ · desde 20XX · X atendimentos/mês         │ <i>faixa de confiança</i>
+├────────────────────────────────────────────────┤
+│ ACOMPANHE SEU GUINCHO                          │ <b>o diferencial, alto na página</b>
+│ [ código do atendimento ] → /rastreamento/:id  │
+├────────────────────────────────────────────────┤
+│ SERVIÇOS → /servicos/[servico]                 │
+│ carros · utilitários e vans · máquinas         │
+├────────────────────────────────────────────────┤
+│ COMO FUNCIONA — 4 passos                       │ <i>aqui a numeração é legítima:</i>
+│                                                │ <i>é sequência real, não decoração</i>
+├────────────────────────────────────────────────┤
+│ ONDE ATENDEMOS → /guincho/[bairro]             │ <b>links internos p/ páginas de bairro</b>
+├────────────────────────────────────────────────┤
+│ A FROTA — fotos reais, capacidades             │ <i>ativo de confiança p/ público B2B</i>
+├────────────────────────────────────────────────┤
+│ AVALIAÇÕES reais do Perfil da Empresa          │
+├────────────────────────────────────────────────┤
+│ PERGUNTAS FREQUENTES  &lt;details&gt;/&lt;summary&gt;       │ <b>acordeão nativo · 0 JS · FAQPage</b>
+├────────────────────────────────────────────────┤
+│ RODAPÉ — NAP completo, idêntico ao GBP         │ <b>consistência NAP = ranking local</b>
+└────────────────────────────────────────────────┘
+</pre>
+
+    <div class="aviso">
+      <strong>Três mudanças em relação ao site atual, com motivo.</strong> Os emojis usados como marcadores (1️⃣ 🕒 🚛) saem: leitores de tela os anunciam de forma desconexa e eles pesam contra a percepção de profissionalismo no público industrial. O carrossel da galeria vira <code>scroll-snap</code> em CSS, eliminando JavaScript e a fonte mais provável de CLS. E a numeração dos passos permanece, porque ali existe uma sequência real — nas outras seções, não entra numeração.
+    </div>
+  </div>
+</section>
+
+<section class="escura">
+  <div class="wrap">
+    <h2>Arquitetura de rotas</h2>
+    <p class="linha-titulo">App Router, com a estratégia de renderização decidida rota a rota.</p>
+
+    <div class="aviso">
+      <strong>Correção necessária no formato que você pediu.</strong> <code style="background:rgba(255,255,255,.12);color:#FFD79A">/guincho-[bairro]</code> não é uma rota válida no App Router: um segmento dinâmico ocupa o nome inteiro da pasta, e prefixos como <code style="background:rgba(255,255,255,.12);color:#FFD79A">guincho-[bairro]</code> não são suportados. Duas saídas reais, abaixo.
+    </div>
+
+<pre>
+app/
+├── layout.tsx                    <i>fontes, JSON-LD Organization, barra fixa</i>
+├── page.tsx                      /                          <b>SSG</b>
+├── sitemap.ts                    <i>gerado das mesmas fontes de dados das rotas</i>
+├── robots.ts
+├── opengraph-image.tsx           <i>resolve o placeholder quebrado de hoje</i>
+│
+├── servicos/
+│   ├── page.tsx                  /servicos                  <b>SSG</b>
+│   └── [servico]/page.tsx        /servicos/transporte-de-maquinas
+│                                                            <b>SSG · generateStaticParams</b>
+├── guincho/
+│   └── [bairro]/page.tsx         /guincho/ponta-negra        <b>SSG · dynamicParams=false</b>
+│
+├── rastreamento/
+│   └── [id]/page.tsx             /rastreamento/aK3f9xQ2      <b>force-dynamic · noindex</b>
+│
+├── frota/page.tsx                /frota                      <b>SSG</b>
+├── blog/[slug]/page.tsx          /blog/o-que-fazer-quando-o-carro-quebra
+│                                                            <b>ISR · revalidate 3600</b>
+└── api/
+    └── posicao/route.ts          <i>ingestão do GPS do motorista</i>
+</pre>
+
+    <h3>Opção A — <code style="background:rgba(255,255,255,.12);color:#FFD79A">/guincho/[bairro]</code></h3>
+    <p>Pasta estática <code style="background:rgba(255,255,255,.12);color:#FFD79A">guincho/</code> com segmento dinâmico dentro. Limpa, previsível, sem risco de colisão. É a minha recomendação.</p>
+
+    <h3>Opção B — <code style="background:rgba(255,255,255,.12);color:#FFD79A">/guincho-ponta-negra</code> exato</h3>
+    <p>Se o formato com hífen na raiz for inegociável, cria-se <code style="background:rgba(255,255,255,.12);color:#FFD79A">app/[slug]/page.tsx</code> na raiz, com <code style="background:rgba(255,255,255,.12);color:#FFD79A">generateStaticParams</code> devolvendo apenas os slugs válidos e <code style="background:rgba(255,255,255,.12);color:#FFD79A">dynamicParams = false</code>, para qualquer outra coisa cair em 404. Funciona, e o Next resolve segmentos estáticos antes do dinâmico, então <code style="background:rgba(255,255,255,.12);color:#FFD79A">/servicos</code> continua ganhando. O custo é que a raiz vira um espaço compartilhado e cada rota nova precisa ser conferida contra essa lista.</p>
+    <p>O ganho de SEO de A para B é praticamente zero. O Google não trata hífen e barra de forma materialmente diferente aqui. Escolha por manutenção, não por ranking.</p>
+
+    <table>
+      <thead><tr><th>Rota</th><th>Renderização</th><th>Indexação</th><th>Motivo</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code></td><td>SSG</td><td>index</td><td>Conteúdo estável. Avaliações do GBP entram por ISR de 24h.</td></tr>
+        <tr><td><code>/servicos/[servico]</code></td><td>SSG</td><td>index</td><td>Alvo das buscas comerciais de cauda longa.</td></tr>
+        <tr><td><code>/guincho/[bairro]</code></td><td>SSG estrito</td><td>index</td><td><code>dynamicParams=false</code> impede geração de bairro inexistente sob demanda.</td></tr>
+        <tr><td><code>/rastreamento/[id]</code></td><td><code>force-dynamic</code></td><td><strong>noindex, nofollow</strong></td><td>Dado pessoal em tempo real. Nunca pode entrar em índice, sitemap ou cache de CDN.</td></tr>
+        <tr><td><code>/blog/[slug]</code></td><td>ISR 3600s</td><td>index</td><td>Autoridade tópica local sem rebuild a cada correção.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="aviso">
+      <strong>Os IDs de rastreamento precisam ser não sequenciais.</strong> Com <code style="background:rgba(255,255,255,.12);color:#FFD79A">/rastreamento/1</code>, <code style="background:rgba(255,255,255,.12);color:#FFD79A">/2</code>, <code style="background:rgba(255,255,255,.12);color:#FFD79A">/3</code>, qualquer pessoa itera e assiste à localização de clientes reais. Use nanoid ou UUID, com expiração automática ao encerrar o atendimento. Localização é dado pessoal sob a LGPD, e o vazamento aqui não é bug de software, é incidente de privacidade.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Plano de componentes</h2>
+    <p class="linha-titulo">A regra: Server Component é o padrão. <code>"use client"</code> é exceção que precisa ser justificada, e sempre na folha da árvore.</p>
+
+    <div class="duo">
+      <div>
+        <h3>Server Components</h3>
+        <p class="peso">JavaScript enviado ao navegador: zero</p>
+        <ul>
+          <li><code>RootLayout</code>, <code>Header</code>, <code>Footer</code></li>
+          <li><code>BarraEmergencia</code> — fixa via <code>position:sticky</code>, sem JS</li>
+          <li><code>Hero</code> — os CTAs são <code>&lt;a href="tel:"&gt;</code> puros</li>
+          <li><code>CardServico</code>, <code>GradeBairros</code></li>
+          <li><code>FAQ</code> — <code>&lt;details&gt;/&lt;summary&gt;</code> nativo</li>
+          <li><code>Galeria</code> — CSS <code>scroll-snap</code></li>
+          <li><code>Avaliacoes</code> — fetch no servidor, cache 24h</li>
+          <li><code>JsonLd</code> — LocalBusiness, Service, FAQPage, BreadcrumbList</li>
+          <li><code>MapaEstatico</code> — imagem da área de cobertura, não mapa interativo</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Client Components</h3>
+        <p class="peso">Isolados, nunca envolvendo a árvore</p>
+        <ul>
+          <li><code>MapaRastreamento</code> — <code>dynamic(..., {ssr:false})</code>, só existe em <code>/rastreamento/[id]</code></li>
+          <li><code>CampoCodigo</code> — input do código de atendimento</li>
+          <li><code>BotaoWhatsAppComLocal</code> — usa <code>navigator.geolocation</code> para pré-preencher a mensagem; degrada para link comum se a permissão for negada</li>
+          <li><code>MenuMobile</code> — só se o menu não couber em CSS</li>
+        </ul>
+        <p class="peso" style="margin-top:16px">Quatro componentes clientes no site inteiro. É isso que mantém o INP perto de zero nas páginas que o Google mede.</p>
+      </div>
+    </div>
+
+    <h3>Biblioteca de mapa</h3>
+    <p>Google Maps JS API custa mais de 200KB e cobra por carregamento. <strong>MapLibre GL JS</strong> ou <strong>Leaflet</strong> (por volta de 40KB) resolvem o caso de uso, que é um marcador se movendo sobre um mapa. Como a rota é <code>noindex</code> e o import é dinâmico, esse peso nunca toca o LCP de nenhuma página indexada — o custo fica contido em quem já é cliente e já está esperando.</p>
+
+    <h3>Transporte do tempo real</h3>
+    <p>Funções serverless da Vercel não sustentam conexão longa. WebSocket próprio exige servidor persistente. Para o volume desse negócio, <strong>Supabase Realtime</strong> ou <strong>Pusher</strong> entregam o canal por uma fração do custo de operar infraestrutura própria. Alternativa mais simples ainda: <em>polling</em> a cada 10 segundos. Um guincho no trânsito de Manaus não se move rápido o suficiente para justificar 60 atualizações por minuto.</p>
+  </div>
+</section>
+
+<div class="chevron"></div>
+
+<section class="escura">
+  <div class="wrap">
+    <h2>Riscos</h2>
+    <p class="linha-titulo">O que pode fazer esse projeto falhar mesmo com a execução técnica perfeita.</p>
+
+    <div class="risco" style="background:#1B2C39;border-color:#2A3D4C;border-left-color:#D7263D">
+      <h3 style="color:#fff">O rastreamento pode aumentar a ansiedade em vez de reduzir</h3>
+      <p style="color:#9FB1BE">O sistema depende do celular do motorista transmitindo GPS de forma contínua. Se ele esquecer de ativar, ficar sem bateria ou perder sinal — comum nas vias periféricas e nas rodovias de acesso — o cliente vê um ícone parado no mapa e conclui que foi abandonado. O diferencial vira reclamação.</p>
+      <p style="color:#9FB1BE"><span class="fix" style="color:#FF9500">Mitigação:</span> a tela nunca mostra só o mapa. Mostra "última atualização há 2 min", tempo estimado, nome e telefone do motorista. Se a posição envelhecer além de um limite, o mapa some e dá lugar ao contato direto. E o sucesso do produto passa a depender de treinamento do motorista, que é problema operacional do cliente, não de software.</p>
+      <p style="color:#9FB1BE"><span class="fix" style="color:#FF9500">Alternativa para a fase 1:</span> a localização ao vivo do próprio WhatsApp já faz 80% disso, custa zero e o motorista já sabe usar. Construir o sistema próprio quando houver volume que justifique.</p>
+    </div>
+
+    <div class="risco" style="background:#1B2C39;border-color:#2A3D4C;border-left-color:#D7263D">
+      <h3 style="color:#fff">Páginas de bairro em massa são doorway pages</h3>
+      <p style="color:#9FB1BE">Gerar 60 páginas que só trocam o nome do bairro é o padrão que as diretrizes do Google descrevem como doorway page. O risco não é ficar em segundo lugar, é a ação manual.</p>
+      <p style="color:#9FB1BE"><span class="fix" style="color:#FF9500">Mitigação:</span> 8 a 12 bairros, cada um com conteúdo próprio de verdade. Ponta Negra é orla e turista com carro alugado. Distrito Industrial é empilhadeira e máquina pesada. BR-174 é rodovia, distância e pane em trecho sem acostamento. Vias de acesso, pontos de referência, tempo médio real. Se você não consegue escrever 300 palavras genuínas sobre um bairro, ele não merece página.</p>
+    </div>
+
+    <div class="risco" style="background:#1B2C39;border-color:#2A3D4C;border-left-color:#D7263D">
+      <h3 style="color:#fff">O TOP 1 não será entregue pelo site</h3>
+      <p style="color:#9FB1BE">Para "guincho perto de mim" e "guincho 24h Manaus", quem decide é o pacote local: Perfil da Empresa no Google, volume e recência de avaliações, categoria correta, fotos, horário 24h configurado. Um portal impecável com 12 avaliações perde para um concorrente de site ruim com 90.</p>
+      <p style="color:#9FB1BE"><span class="fix" style="color:#FF9500">Mitigação:</span> o site precisa de um mecanismo de coleta de avaliação embutido no fluxo — link curto enviado por WhatsApp ao encerrar o atendimento. Isso é feature do escopo, não marketing paralelo. Sem ela, a promessa de TOP 1 não se sustenta e eu prefiro dizer isso agora do que na entrega.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Sequência sugerida</h2>
+    <p class="linha-titulo">A ordem importa: o que dá retorno mais cedo vem primeiro.</p>
+    <ol class="fases">
+      <li><b>Correções imediatas no site atual</b>Trocar os placeholders de <code>og:image</code>/<code>twitter:image</code>, apontar o domínio próprio, completar o Perfil da Empresa. Independe do rebuild e já muda o resultado desta semana.</li>
+      <li><b>Fundação Next.js</b>Design system em tokens, layout, Home, serviços, JSON-LD, sitemap, <code>opengraph-image</code>. Aqui é onde os Core Web Vitals são vencidos ou perdidos.</li>
+      <li><b>Páginas de bairro</b>De 8 a 12, com conteúdo escrito uma a uma. É a fase mais lenta e a que traz o tráfego.</li>
+      <li><b>Coleta de avaliações</b>Fluxo de solicitação pós-atendimento. Alimenta o pacote local, que é o que realmente ranqueia.</li>
+      <li><b>Rastreamento</b>Por último, com volume já existente para justificar a operação e treinar os motoristas.</li>
+    </ol>
+  </div>
+</section>
+
+<div class="chevron"></div>
+
+</body>
+</html>

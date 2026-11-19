@@ -1,0 +1,328 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   DESIGN SYSTEM — RN GUINCHO
+   Seis tokens de cor. Cada um com uma função, nenhum decorativo.
+   ============================================================ */
+@theme {
+  /* --- Paleta ------------------------------------------------
+     Noite do Rio  fundo institucional (azul profundo, não preto)
+     Asfalto       superfície elevada sobre o fundo escuro
+     Giratório     AÇÃO PRIMÁRIA — ver regra de contraste abaixo
+     Azul Farol    camada informativa: links, mapa, progresso
+     Triângulo     só erro e urgência real, nunca enfeite
+     Névoa         fundo de páginas de conteúdo, leitura longa
+  */
+  --color-noite: #0e1a24;
+  --color-asfalto: #1b2c39;
+  --color-giratorio: #ff9500;
+  --color-farol: #0b6ba8;
+  --color-triangulo: #d7263d;
+  --color-nevoa: #eef1f3;
+  --color-branco: #ffffff;
+
+  /* Derivados de texto e linha. Não são cores novas: são estados. */
+  --color-texto: #0e1a24;
+  --color-texto-fraco: #5a6b77;
+  --color-texto-claro: #9fb1be;
+  --color-linha: #d3dae0;
+  --color-linha-escura: #2a3d4c;
+
+  /* WhatsApp fica FORA da paleta e é intencional. Reconhecimento de marca
+     vale mais que pureza cromática num botão que o usuário precisa
+     identificar em meio segundo. É o único elemento com cor externa
+     e não se repete em nenhum outro lugar. */
+  --color-zap: #25d366;
+
+  /* --- Tipografia --------------------------------------------
+     Barlow nasceu da sinalização viária. Superfamília, duas larguras
+     ópticas: contraste real entre título e texto sem um segundo download.
+     As variáveis --fonte-* são injetadas pelo next/font no layout. */
+  --font-display: var(--fonte-display), 'Arial Narrow', sans-serif;
+  --font-corpo: var(--fonte-corpo), system-ui, sans-serif;
+
+  /* Escala fluida. Base 17px no corpo, não 16 — a leitura acontece
+     sob estresse e frequentemente com uma mão só. */
+  --text-corpo: 1.0625rem; /* 17px */
+  --text-d1: clamp(2.5rem, 9vw, 6.5rem);
+  --text-d2: clamp(1.875rem, 4.4vw, 2.875rem);
+  --text-d3: clamp(1.375rem, 2.4vw, 1.75rem);
+  --text-tel: clamp(2.375rem, 7vw, 4.25rem);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-nevoa);
+    color: var(--color-texto);
+    font-family: var(--font-corpo);
+    font-size: var(--text-corpo);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Telefone e placa não podem dançar entre um dígito e outro. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Foco sempre visível. O usuário pode estar navegando por teclado
+     ou com a tela em brilho máximo sob sol. */
+  :focus-visible {
+    outline: 3px solid var(--color-farol);
+    outline-offset: 2px;
+  }
+}
+
+/* ============================================================
+   COMPONENTES
+   ============================================================ */
+@layer components {
+  /* --- Faixa de socorro ---
+     Motivo da fita refletiva traseira do guincho. Decorativa:
+     precisa de aria-hidden em quem a usa. */
+  .chevron {
+    height: 14px;
+    background: repeating-linear-gradient(
+      115deg,
+      var(--color-giratorio) 0 22px,
+      var(--color-noite) 22px 44px
+    );
+  }
+
+  /* ==========================================================
+     BOTÕES — placa de sinalização viária, não retângulo de template
+     ==========================================================
+
+     A forma vem do mesmo lugar que a paleta: o veículo de socorro.
+     Canto superior esquerdo e inferior direito chanfrados, como placa
+     de via; fita refletiva na base, o mesmo motivo do .chevron.
+
+     Por que chanfro em diagonal e não borda arredondada: raio é o que
+     todo template entrega, e o mercado de guincho em Manaus inteiro se
+     parece porque usa os mesmos defaults. O corte reto em 45° é lido
+     como sinalização, não como botão de site.
+
+     O recorte é feito com clip-path — sem imagem, sem SVG, sem JS.
+     Nenhum byte a mais no bundle.
+
+     Alvos de toque na zona do polegar: mínimo 56px de altura. */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 56px;
+    /* Padding inferior maior: abre espaço para a fita sem espremer o texto. */
+    padding: 0 1.5rem 6px;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    isolation: isolate;
+
+    /* O chanfro. 14px é o ponto onde o corte lê como intencional —
+       abaixo disso parece defeito de renderização. */
+    --chanfro: 14px;
+    clip-path: polygon(
+      var(--chanfro) 0,
+      100% 0,
+      100% calc(100% - var(--chanfro)),
+      calc(100% - var(--chanfro)) 100%,
+      0 100%,
+      0 var(--chanfro)
+    );
+
+    transition:
+      transform 120ms ease,
+      filter 120ms ease;
+  }
+
+  /* Fita refletiva na base — a assinatura da marca no botão.
+     As listras são ESCURAS sobre a cor do botão, nunca transparentes:
+     com transparent o fundo da página vaza pelos vãos e o chanfro corta
+     as pontas, o que lê como serrilhado defeituoso em vez de fita.
+     currentColor é a cor do texto (Noite do Rio nas duas variantes),
+     então a regra serve âmbar e verde sem duplicação.
+
+     A fita para antes do chanfro inferior direito (right: 14px) para
+     não atravessar o corte e quebrar a silhueta de placa. */
+  .btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: var(--chanfro);
+    bottom: 0;
+    /* 8px: abaixo disso o ângulo de 115° transforma cada listra em um
+       triângulo, e a base do botão lê como serrilhado, não como fita. */
+    height: 8px;
+    /* Listras largas e de contraste baixo. Preto sólido sobre âmbar numa
+       faixa fina vira dente de serra; 32% de mistura mantém a leitura de
+       fita sem gritar. */
+    background-image: repeating-linear-gradient(
+      115deg,
+      color-mix(in srgb, currentColor 32%, transparent) 0 10px,
+      transparent 10px 20px
+    );
+    /* O vão entre as listras mostra a cor do BOTÃO, não o fundo da
+       página: o ::after herda background-color da variante via
+       inherit, então a faixa nunca fica vazada. */
+    background-color: inherit;
+    transition: opacity 120ms ease;
+  }
+
+  /* No toque o botão afunda e a fita acende — a resposta é física,
+     não um brilho genérico. */
+  .btn:hover {
+    filter: brightness(1.06);
+  }
+
+  .btn:hover::after {
+    opacity: 1;
+  }
+
+  .btn:active {
+    transform: translateY(2px);
+  }
+
+  /* FOCO — o detalhe que quase quebrou a acessibilidade.
+     O clip-path recorta TUDO que sai da forma, box-shadow e outline
+     incluídos. Um anel desenhado no próprio .btn fica invisível, e
+     quem navega por teclado perde a indicação de foco por completo
+     (verificado no navegador, não presumido).
+
+     Solução: o anel é desenhado por um ::before que vive DENTRO da
+     área recortada, encostado na borda. Ele acompanha o chanfro
+     porque é cortado pelo mesmo clip-path do pai. */
+  .btn:focus-visible {
+    outline: none;
+  }
+
+  .btn:focus-visible::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    box-shadow:
+      inset 0 0 0 3px var(--color-noite),
+      inset 0 0 0 6px var(--color-branco);
+    pointer-events: none;
+  }
+
+  /* --- Variantes de cor ---
+     REGRA DE CONTRASTE, NÃO NEGOCIÁVEL:
+     Giratório #FF9500 sobre branco dá ~2,2:1 e reprova em AA.
+     Ele NUNCA é cor de texto sobre fundo claro. É sempre
+     preenchimento, com texto Noite do Rio por cima (~8,7:1).
+     Botão âmbar, letra escura. */
+  .btn-primario {
+    background-color: var(--color-giratorio);
+    color: var(--color-noite);
+  }
+
+  .btn-zap {
+    background-color: var(--color-zap);
+    color: var(--color-noite);
+  }
+
+  /* Botão secundário: contorno, para quando houver dois CTAs e um
+     precisar ceder hierarquia. O chanfro impede uma borda comum de
+     acompanhar a forma, então o contorno é desenhado com outline
+     interno via box-shadow. */
+  .btn-contorno {
+    background-color: transparent;
+    color: var(--color-texto);
+    box-shadow: inset 0 0 0 2px var(--color-linha);
+  }
+
+  .btn-contorno:hover {
+    box-shadow: inset 0 0 0 2px var(--color-farol);
+    color: var(--color-farol);
+  }
+
+  /* Campo de texto que acompanha o chanfro do botão.
+     O corte é espelhado (cantos superior direito e inferior esquerdo)
+     para que input e botão, lado a lado, formem uma peça só. */
+  .campo {
+    --chanfro: 14px;
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--chanfro)) 0,
+      100% var(--chanfro),
+      100% 100%,
+      var(--chanfro) 100%,
+      0 calc(100% - var(--chanfro))
+    );
+    /* Borda via box-shadow: o clip-path cortaria uma border comum. */
+    box-shadow: inset 0 0 0 2px var(--color-linha);
+    outline: none;
+  }
+
+  .campo:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-farol);
+  }
+
+  .campo[aria-invalid='true'] {
+    box-shadow: inset 0 0 0 2px var(--color-triangulo);
+  }
+
+  /* --- Galeria ---
+     scroll-snap em CSS puro no lugar do carrossel em JS.
+     Elimina a fonte mais provável de CLS. */
+  .snap-x-galeria {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-x-galeria > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+}
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+@utility wrap {
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* Medida de linha limitada a 68 caracteres. */
+@utility medida {
+  max-width: 68ch;
+}
